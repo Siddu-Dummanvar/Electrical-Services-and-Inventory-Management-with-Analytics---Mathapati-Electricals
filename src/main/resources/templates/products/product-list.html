@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title th:text="'Products | ' + ${category.name}">Products</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<link rel="stylesheet" th:href="@{/styles.css}">
+	<link rel="stylesheet" th:href="@{/css/products.css}">
+
+	<style>
+		.navbar {
+			padding-top: 0px;
+			padding-bottom: 0px;
+			background: linear-gradient(90deg, #022860, #3f97db);
+			margin-bottom: 1px;
+		}
+
+		.navbar-nav .nav-item a {
+			text-decoration: none !important;
+			color: #fdf8f8 !important;
+			transition: all 0.3s ease;
+			display: inline-block;
+		}
+
+		.navbar-nav .nav-item a:hover {
+			color: #111011 !important;
+			transform: translateY(-3px);
+		}
+
+		.navbar-brand img {
+			border: 2px solid white;
+		}
+
+		.product-card {
+			border: 1px solid #ced4da;
+			border-radius: 10px;
+			padding: 15px;
+			background: #e9ecef;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
+			margin-bottom: 20px;
+		}
+
+		.product-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		}
+
+		.product-img img {
+			width: 100%;
+			height: 200px;
+			object-fit: cover;
+			border-radius: 8px;
+		}
+
+		.price-box {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin: 10px 0;
+		}
+
+		.selling-price {
+			font-size: 1.5rem;
+			font-weight: bold;
+			color: #2c3e50;
+		}
+
+		.marked-price {
+			font-size: 1.1rem;
+			color: #95a5a6;
+			text-decoration: line-through;
+			margin-left: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark">
+		<div class="container">
+			<a class="navbar-brand text-center" href="#">
+				<img th:src="@{/images/tiger.jpg}" class="me-2 rounded-circle" alt="Logo" width="50" height="50">
+				Mathapati Electricals
+			</a>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item mx-2 fs-5"><a class="nav-link text-dark" th:href="@{/Home}">Home</a></li>
+					<li class="nav-item mx-2 fs-5"><a class="nav-link text-dark" href="#aboutus">About</a></li>
+					<li class="nav-item mx-2 fs-5"><a class="nav-link text-dark" th:href="@{/services}">Services</a>
+					</li>
+					<a th:href="@{/user-profile}" title="Go to My Profile">
+						<svg xmlns="http://www.w3.org/2000/svg" width="65" height="56" fill="white"
+							class="bi bi-person-circle" viewBox="0 0 16 16"
+							style="padding-left: 28px; cursor: pointer;">
+							<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+							<path fill-rule="evenodd"
+								d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37 C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+						</svg>
+					</a>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div th:if="${successMSG}" class="alert alert-success alert-dismissible fade show" role="alert"
+		style="text-align: center; margin: 10px;">
+		<span th:text="${successMSG}"></span>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	<div class="container my-5">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h1 class="mb-0">
+				Products: <span class="text-primary" th:text="${category.name}">Category</span>
+			</h1>
+			<a th:href="@{/Home}" class="btn btn-outline-secondary">
+				<i class="bi bi-arrow-left-circle-fill me-2"></i>Back to Categories
+			</a>
+		</div>
+
+		<div th:if="${products.isEmpty()}" class="alert alert-warning text-center" role="alert">
+			There are no products available in this category yet.
+		</div>
+
+		<div class="row g-4" th:if="${!products.isEmpty()}">
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3" th:each="product : ${products}">
+				<div class="product-card">
+
+					<div class="product-img">
+						<img th:src="@{/images/{imgName}(imgName=${product.imageName})}" th:alt="${product.name}" />
+					</div>
+
+					<h5 class="product-title mt-3" th:text="${product.name}">Product Name</h5>
+					<p class="product-desc" th:text="${product.description}">Description</p>
+
+					<div class="price-box">
+						<span class="selling-price" th:text="'₹' + ${product.sellingPrice}">₹1299.00</span>
+						<span class="marked-price" th:text="'₹' + ${product.markedPrice}">₹1500.00</span>
+					</div>
+
+					<div th:if="${product.stock > 0}">
+
+						<div class="input-group mb-2" style="max-width: 150px; margin: 0 auto;">
+							<button class="btn btn-outline-secondary btn-sm" type="button"
+								th:onclick="'decreaseQty(' + ${product.id} + ')'" style="font-weight: bold;">-</button>
+
+							<input type="text" th:id="'qtyInput-' + ${product.id}" value="1"
+								class="form-control text-center bg-white" readonly style="height: 31px;">
+
+							<button class="btn btn-outline-secondary btn-sm" type="button"
+								th:onclick="'increaseQty(' + ${product.id} + ', ' + ${product.stock} + ')'"
+								style="font-weight: bold;">+</button>
+						</div>
+
+						<div class="d-flex gap-2">
+							
+							<button class="btn btn-primary flex-grow-1"
+								th:data-id="${product.id}"
+								th:data-name="${product.name}"
+								th:data-price="${product.sellingPrice}"
+								onclick="openBuyModalFromButton(this)">
+								Buy Now
+							</button>
+
+							<button class="btn btn-warning flex-grow-1 text-white"
+								th:onclick="'addToCartWithQty(' + ${product.id} + ')'">
+								<i class="bi bi-cart-plus-fill me-2"></i> Cart
+							</button>
+						</div>
+					</div>
+
+					<div th:if="${product.stock <= 0}">
+						<button class="btn btn-secondary w-100" disabled>
+							<i class="bi bi-x-circle-fill me-2"></i>Out of Stock
+						</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title">Confirm Purchase</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="mb-2">Product: <strong id="modalProductName" class="text-primary"></strong></p>
+
+					<div class="mb-3">
+						<label class="form-label fw-bold">Quantity:</label>
+						<span id="modalQtyText" class="fs-5 fw-bold ms-2">1</span>
+					</div>
+
+					<div class="d-flex justify-content-between align-items-center bg-light p-2 mb-3 rounded">
+						<span>Total Amount:</span>
+						<span id="modalTotalPrice" class="fw-bold text-success fs-5">₹0.0</span>
+					</div>
+
+					<hr>
+					<label class="form-label fw-bold">Select Payment Method:</label>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="paymentMode" id="modeCOD" value="COD"
+							checked>
+						<label class="form-check-label" for="modeCOD">Cash on Delivery</label>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="paymentMode" id="modeONLINE" value="ONLINE">
+						<label class="form-check-label" for="modeONLINE">Online Payment (Razorpay)</label>
+					</div>
+
+					<input type="hidden" id="hiddenProductId">
+					<input type="hidden" id="hiddenUnitPrice">
+					<input type="hidden" id="hiddenQuantity"> 
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-success" onclick="processPayment()">Place Order</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+		// 1. Increase Qty on Card
+		function increaseQty(id, stock) {
+			let input = document.getElementById('qtyInput-' + id);
+			let val = parseInt(input.value);
+			if (val < stock) {
+				input.value = val + 1;
+			} else {
+				alert("Max stock reached!");
+			}
+		}
+
+		// 2. Decrease Qty on Card
+		function decreaseQty(id) {
+			let input = document.getElementById('qtyInput-' + id);
+			let val = parseInt(input.value);
+			if (val > 1) {
+				input.value = val - 1;
+			}
+		}
+
+		// 3. Add to Cart with Quantity
+		function addToCartWithQty(id) {
+			let qty = document.getElementById('qtyInput-' + id).value;
+			window.location.href = "/addToCart/" + id + "/" + qty;
+		}
+
+		// 4. Open Modal (Populate Text Only)
+		function openBuyModalFromButton(btn) {
+			let id = btn.getAttribute('data-id');
+			let name = btn.getAttribute('data-name');
+			let price = parseFloat(btn.getAttribute('data-price'));
+			
+			// Get Qty from the CARD input
+			let cardQtyInput = document.getElementById('qtyInput-' + id);
+			let qty = parseInt(cardQtyInput.value);
+
+			// Store in hidden fields for Logic
+			document.getElementById('hiddenProductId').value = id;
+			document.getElementById('hiddenUnitPrice').value = price;
+			document.getElementById('hiddenQuantity').value = qty; // Store qty
+
+			// Show in Modal as TEXT
+			document.getElementById('modalProductName').innerText = name;
+			document.getElementById('modalQtyText').innerText = qty; 
+
+			// Calculate Total
+			let total = price * qty;
+			document.getElementById('modalTotalPrice').innerText = "₹" + total.toFixed(2);
+
+			var myModal = new bootstrap.Modal(document.getElementById('buyNowModal'));
+			myModal.show();
+		}
+
+		function processPayment() {
+			let mode = document.querySelector('input[name="paymentMode"]:checked').value;
+			// Get Qty from Hidden Field
+			let qty = document.getElementById('hiddenQuantity').value;
+			let pId = document.getElementById('hiddenProductId').value;
+			let price = parseFloat(document.getElementById('hiddenUnitPrice').value);
+			let totalAmount = price * qty;
+
+			if (mode === 'COD') {
+				saveOrderToDB(pId, qty, totalAmount, "COD", "Pending", "NA");
+			} else {
+				startRazorpay(totalAmount, pId, qty);
+			}
+		}
+
+		function startRazorpay(amount, pId, qty) {
+			$.ajax({
+				url: '/create_order',
+				data: JSON.stringify({amount: amount, info: 'order_request'}),
+				contentType: 'application/json',
+				type: 'POST',
+				dataType: 'json',
+				success: function (response) {
+					if (response.status == "created") {
+						let options = {
+							key: "rzp_test_RnwFYefaZom83T", // YOUR KEY
+							amount: response.amount,
+							currency: "INR",
+							name: "Mathapati Electricals",
+							description: "Product Purchase",
+							order_id: response.id,
+							handler: function (paymentResponse) {
+								saveOrderToDB(pId, qty, amount, "ONLINE", "Paid", paymentResponse.razorpay_payment_id);
+							},
+							theme: {color: "#3399cc"}
+						};
+						let rzp = new Razorpay(options);
+						rzp.open();
+					}
+				},
+				error: function (err) { alert("Payment initiation failed"); }
+			});
+		}
+
+		function saveOrderToDB(productId, quantity, amount, mode, status, txnId) {
+			let orderData = {
+				productId: productId,
+				quantity: quantity,
+				amount: amount,
+				paymentMode: mode,
+				paymentStatus: status,
+				transactionId: txnId
+			};
+
+			$.ajax({
+				url: '/save_single_order',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(orderData),
+				success: function (response) {
+				                    // response should contain { status: "success", orderId: 123 }
+				                    if (response.status === "success") {
+				                        // 🚀 REDIRECT TO INVOICE PAGE
+				                        window.location.href = "/order-confirmation/" + response.orderId;
+				                    } else {
+				                        alert("Order placed, but ID missing.");
+				                        location.reload();
+				                    }
+				                },
+				error: function (error) { alert("Failed to place order."); }
+			});
+		}
+	</script>
+</body>
+</html>

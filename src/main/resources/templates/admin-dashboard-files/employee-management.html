@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Employee Management | Admin Dashboard</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+	<link rel="stylesheet" th:href="@{/styles.css}">
+
+	<style>
+		.sidebar {
+			height: 100vh;
+			width: 250px;
+			background-color: #071b38;
+			position: fixed;
+		}
+
+		.main-content {
+			margin-left: 250px;
+			padding: 20px;
+			background-color: #f4f6f9;
+			min-height: 100vh;
+		}
+
+		.badge-pending {
+			background-color: #ffc107;
+			color: #000;
+		}
+
+		.badge-active {
+			background-color: #198754;
+			color: #fff;
+		}
+
+		.navbar {
+			padding-top: 0px;
+			padding-bottom: 0px;
+			background: linear-gradient(90deg, #022860, #3f97db);
+			margin-bottom: 1px;
+		}
+
+		.navbar-brand img {
+			border: 2px solid white;
+		}
+
+		.sidebar {
+			height: 90vh;
+			width: 250px;
+			background-color: #071b38;
+			margin-top: 10px;
+		}
+
+		.fontStyle {
+			color: #f6eeee;
+			text-decoration: none;
+			font-style: normal;
+			font-size: large;
+		}
+
+		.navlink {
+			padding-top: 10px;
+			padding-bottom: 15px;
+			padding-left: 20px;
+		}
+
+		.navlink:hover {
+			background-color: #072f4e
+		}
+	</style>
+</head>
+
+<body>
+
+	<div th:replace="~{fragments/admin-navbar :: adminNavbar}"></div>
+
+	<div class="container-fluid p-0">
+
+		<div th:replace="~{fragments/admin-sidebar :: adminSidebar}"></div>
+
+		<div class="main-content">
+
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h3 class="fw-bold text-dark">Employee Management</h3>
+				<a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+					<i class="bi bi-arrow-left"></i> Back to Dashboard
+				</a>
+			</div>
+
+			<div class="card shadow-sm border-0 rounded-4">
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-dark">
+								<tr>
+									<th>Name</th>
+									<th>Role</th>
+									<th>Phone</th>
+									<th>City</th>
+									<th>Status</th>
+									<th class="text-end">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:if="${employees.isEmpty()}">
+									<td colspan="6" class="text-center py-4 text-muted">No employees found.</td>
+								</tr>
+
+								<tr th:each="emp : ${employees}">
+									<td>
+										<div class="d-flex flex-column">
+											<span class="fw-bold"
+												th:text="${emp.firstName + ' ' + emp.lastName}">Name</span>
+											<small class="text-muted" th:text="${emp.email}">email@example.com</small>
+										</div>
+									</td>
+									<td th:text="${emp.jobTitle}">Technician</td>
+									<td th:text="${emp.phone}">9876543210</td>
+									<td th:text="${emp.city}">City</td>
+
+									<td>
+										<span class="badge rounded-pill"
+											th:classappend="${emp.status == 'ACTIVE' ? 'badge-active' : 'badge-pending'}"
+											th:text="${emp.status}">
+											PENDING
+										</span>
+									</td>
+
+									<td class="text-end">
+
+										<a th:if="${emp.status != 'ACTIVE'}"
+											th:href="@{/admin/employees/approve/{email}(email=${emp.email})}"
+											class="btn btn-sm btn-success me-2" title="Approve Employee">
+											<i class="bi bi-check-circle-fill"></i> Accept
+										</a>
+
+										<a th:href="@{/admin/employees/delete/{email}(email=${emp.email})}"
+											class="btn btn-sm btn-outline-danger" title="Remove Employee"
+											onclick="return confirm('Are you sure you want to remove this employee?')">
+											<i class="bi bi-trash-fill"></i> Reject
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

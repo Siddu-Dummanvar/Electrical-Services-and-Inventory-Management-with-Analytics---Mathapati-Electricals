@@ -1,0 +1,138 @@
+/* Common Styling */
+body {
+
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f9f2;
+
+
+}
+
+/* Navbar */
+.logo {
+  height: 40px;
+}
+
+/* Login Form Styling */
+.login-container {
+
+  background: linear-gradient(90deg, #383427, #a3a78e);
+  width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.btn {
+  border-radius: 89px;
+
+}
+
+a {
+  color: #0d6efd;
+}
+
+.navbar-nav ms-auto {
+  gap: 60px;
+
+}
+
+
+/* ============================================================
+   ADMIN SIDEBAR GLOBAL STYLES
+   (Ensures sidebar looks the same on EVERY page)
+   ============================================================ */
+
+/* 1. The Blue Sidebar Container */
+.sidebar {
+    height: 90vh; 
+    width: 250px; 
+    background-color: #071b38; 
+    margin-top: 10px;
+}
+
+/* 2. The Link Items (Padding & Cursor) */
+.navlink {
+    padding-bottom: 15px;
+    padding-left: 20px;
+    padding-top: 10px;
+    cursor: pointer;      /* Hand icon */
+    user-select: none;    /* Stops blinking cursor */
+    transition: 0.3s;     /* Smooth hover effect */
+}
+
+/* 3. Hover Effect */
+.navlink:hover {
+    background-color: #072f4e;
+}
+
+/* 4. Text and Icon Styles */
+.fontStyle {
+    text-decoration: none !important; /* No underline */
+    color: #fdf8f8 !important;       /* White text */
+    font-style: normal !important;   /* No Italics */
+    font-size: large;                /* Large text */
+    display: flex;                   /* Aligns icon and text perfectly */
+    align-items: center;
+    width: 100%;
+}
+
+/* 5. Icon Spacing */
+.fontStyle i {
+    font-size: 20px;
+    color: #fdf8f8;
+    margin-right: 25px; /* The gap between icon and text */
+}
+
+/* --- GLOBAL SIDEBAR STYLES --- */
+.sidebar {
+    height: 90vh; 
+    width: 250px; 
+    background-color: #071b38; 
+    margin-top: 10px;
+}
+
+.navlink {
+    padding-bottom: 15px;
+    padding-left: 20px;
+    padding-top: 10px;
+    cursor: pointer;       /* Shows the Hand icon */
+    
+    /* THIS STOPS THE BLINKING CURSOR / TEXT SELECTION */
+    user-select: none;     
+    -webkit-user-select: none; /* For Safari/Chrome */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Edge/IE */
+    
+    transition: 0.3s;
+}
+
+.navlink:hover {
+    background-color: #072f4e;
+}
+
+.fontStyle {
+    text-decoration: none !important;
+    color: #fdf8f8 !important;
+    font-style: normal !important;
+    font-size: large;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    
+    /* ALSO ADD IT HERE TO BE SAFE */
+    user-select: none; 
+    outline: none; /* Removes the focus outline box */
+}
+
+.fontStyle i {
+    font-size: 20px;
+    color: #fdf8f8;
+    margin-right: 25px;
+}
