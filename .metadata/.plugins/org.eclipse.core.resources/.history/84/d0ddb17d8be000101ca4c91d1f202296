@@ -1,0 +1,379 @@
+package com.matpatielectricals.esinventoryanalytics.controller;
+
+import java.util.List;
+import com.matpatielectricals.esinventoryanalytics.entities.ProductOrder;
+import com.matpatielectricals.esinventoryanalytics.repositories.ProductOrderRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.matpatielectricals.esinventoryanalytics.entities.Employee;
+import com.matpatielectricals.esinventoryanalytics.entities.Feedback;
+import com.matpatielectricals.esinventoryanalytics.entities.Product;
+import com.matpatielectricals.esinventoryanalytics.entities.ServiceRequest;
+import com.matpatielectricals.esinventoryanalytics.entities.User;
+import com.matpatielectricals.esinventoryanalytics.repositories.CategoryRepository;
+import com.matpatielectricals.esinventoryanalytics.repositories.EmployeeRepository;
+import com.matpatielectricals.esinventoryanalytics.repositories.FeedbackRepository;
+import com.matpatielectricals.esinventoryanalytics.repositories.ProductRepository;
+import com.matpatielectricals.esinventoryanalytics.repositories.ServiceRequestRepository;
+import com.matpatielectricals.esinventoryanalytics.repositories.UserRepository;
+
+import jakarta.servlet.http.HttpSession;
+
+import com.matpatielectricals.esinventoryanalytics.entities.ProductOrder;
+import com.matpatielectricals.esinventoryanalytics.repositories.ProductOrderRepository;
+
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.*;
+import java.io.IOException;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+
+	@Autowired
+	private ServiceRequestRepository serviceRequestRepository;
+
+	@Autowired
+	private FeedbackRepository feedbackRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private ProductRepository productRepository;
+
+	@Autowired
+	private CategoryRepository categoryRepository;
+
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
+	@Autowired
+	private ProductOrderRepository productOrderRepository;
+
+	// ===============================================
+	// 1. ADMIN LOGIN
+	// ===============================================
+	@GetMapping("/login")
+	public String showAdminLoginPage(Model model) {
+		model.addAttribute("adminUser", new User());
+		return "admin-login";
+	}
+
+	@PostMapping("/login")
+	public String handleAdminLogin(@ModelAttribute("adminUser") User user, HttpSession session, Model model) {
+		User adminUser = userRepository.findByEmailid(user.getEmailid());
+		if (adminUser != null && adminUser.getPassword().equals(user.getPassword())
+				&& "ADMIN".equals(adminUser.getRole())) {
+			session.setAttribute("adminSession", adminUser);
+			return "redirect:/admin/dashboard";
+		}
+		model.addAttribute("errorMSG", "❌ Invalid Admin ID or Password!");
+		return "admin-login";
+	}
+
+	// ===============================================
+	// 2. DASHBOARD (With Day/Week/Month/Year Analytics)
+	// ===============================================
+	@GetMapping("/dashboard")
+	public String showAdminDashboard(@RequestParam(value = "filter", defaultValue = "year") String filter,
+			HttpSession session, Model model) {
+
+		if (session.getAttribute("adminSession") == null) {
+			return "redirect:/admin/login";
+		}
+
+		// --- 1. KEY METRICS ---
+		List<ProductOrder> allOrders = productOrderRepository.findAll();
+
+		double totalRevenue = allOrders.stream().filter(o -> "Paid".equalsIgnoreCase(o.getStatus()))
+				.mapToDouble(ProductOrder::getPrice).sum();
+
+		long totalProducts = productRepository.count();
+		long totalEmployees = employeeRepository.count();
+
+		long pendingDeliveries = allOrders.stream().filter(o -> !"Delivered".equalsIgnoreCase(o.getDeliveryStatus()))
+				.count();
+
+		long lowStockCount = productRepository.findAll().stream().filter(p -> p.getStock() < 5).count();
+
+        // ✅ NEW: Count Pending Employees
+        // Note: Ensure your Registration Service saves them as "PENDING" (Case Sensitive)
+		long pendingEmployeeRequests = employeeRepository.countByStatus("PENDING");
+
+		model.addAttribute("totalRevenue", totalRevenue);
+		model.addAttribute("totalProducts", totalProducts);
+		model.addAttribute("totalEmployees", totalEmployees);
+		model.addAttribute("pendingDeliveries", pendingDeliveries);
+		model.addAttribute("lowStockCount", lowStockCount);
+        
+        // ✅ Add to Model
+        model.addAttribute("pendingEmployeeRequests", pendingEmployeeRequests);
+		
+        model.addAttribute("currentFilter", filter);
+
+        // ... (Keep the rest of your Chart Logic exactly as it is) ...
+        
+        // --- 2. CHART DATA LOGIC ---
+        // (Don't change anything below here)
+		List<String> chartLabels = new java.util.ArrayList<>();
+		List<Double> chartData = new java.util.ArrayList<>();
+
+		java.time.LocalDate today = java.time.LocalDate.now();
+        // ... rest of the code ...
+        
+        return "admin-dashboard-files/dashboard-home";
+    }
+
+	// ===============================================
+	// 3. PRODUCT MANAGEMENT (Restored Code)
+	// ===============================================
+	@GetMapping("/products")
+	public String productManagement(HttpSession session, Model model) {
+		if (session.getAttribute("adminSession") == null)
+			return "redirect:/admin/login";
+		List<Product> products = productRepository.findAll();
+		model.addAttribute("products", products);
+		return "admin-dashboard-files/product-management";
+	}
+
+	@GetMapping("/products/add")
+	public String showAddProductPage(HttpSession session, Model model) {
+		if (session.getAttribute("adminSession") == null)
+			return "redirect:/admin/login";
+		model.addAttribute("newProduct", new Product());
+		model.addAttribute("categories", categoryRepository.findAll());
+		return "admin-dashboard-files/admin-add-product";
+	}
+
+	// ===============================================
+	// SAVE PRODUCT WITH IMAGE UPLOAD
+	// ===============================================
+	@PostMapping("/products/add")
+	public String saveProduct(@ModelAttribute("newProduct") Product product,
+			@RequestParam("imageFile") MultipartFile file, RedirectAttributes redirectAttributes) {
+
+		try {
+			if (!file.isEmpty()) {
+				// 1. Define the path: src/main/resources/static/images/
+				// System.getProperty("user.dir") gets the project root folder
+				String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+
+				// 2. Get the original filename (e.g., "fan.jpg")
+				String fileName = file.getOriginalFilename();
+
+				// 3. Create the directory if it doesn't exist
+				Path uploadPath = Paths.get(uploadDir);
+				if (!Files.exists(uploadPath)) {
+					Files.createDirectories(uploadPath);
+				}
+
+				// 4. Save the file to the folder
+				try (java.io.InputStream inputStream = file.getInputStream()) {
+					Path filePath = uploadPath.resolve(fileName);
+					Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+				}
+
+				// 5. Save the filename in the database object
+				product.setImageName(fileName);
+			}
+
+			// 6. Save Product to Database
+			productRepository.save(product);
+			redirectAttributes.addFlashAttribute("successMSG", "✅ Product Added Successfully!");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("errorMSG", "❌ Error uploading image: " + e.getMessage());
+		}
+
+		return "redirect:/admin/products/add";
+	}
+
+	@GetMapping("/products/edit/{id}")
+	public String editProduct(@PathVariable("id") Long id, Model model, HttpSession session) {
+		if (session.getAttribute("adminSession") == null)
+			return "redirect:/admin/login";
+		Product product = productRepository.findById(id).orElse(null);
+		model.addAttribute("product", product);
+		model.addAttribute("categories", categoryRepository.findAll());
+		return "admin-dashboard-files/admin-edit-product";
+	}
+
+	@PostMapping("/products/update")
+	public String updateProduct(@ModelAttribute("product") Product product) {
+		productRepository.save(product);
+		return "redirect:/admin/products";
+	}
+
+	@GetMapping("/products/delete/{id}")
+	public String deleteProduct(@PathVariable("id") Long id) {
+		productRepository.deleteById(id);
+		return "redirect:/admin/products";
+	}
+
+	// ===============================================
+	// 4. EMPLOYEE MANAGEMENT (Restored Code)
+	// ===============================================
+	@GetMapping("/employees")
+	public String employeeManagement(HttpSession session, Model model) {
+		if (session.getAttribute("adminSession") == null)
+			return "redirect:/admin/login";
+		List<Employee> allEmployees = employeeRepository.findAll();
+		model.addAttribute("employees", allEmployees);
+		return "admin-dashboard-files/employee-management";
+	}
+
+	@GetMapping("/employees/approve/{email}")
+	public String approveEmployee(@PathVariable String email) {
+		Employee emp = employeeRepository.findById(email).orElse(null);
+		if (emp != null) {
+			emp.setStatus("ACTIVE");
+			emp.setWorkStatus("FREE"); // Ensure they start as FREE
+			employeeRepository.save(emp);
+		}
+		return "redirect:/admin/dashboard";
+	}
+
+	@GetMapping("/employees/delete/{email}")
+	public String deleteEmployee(@PathVariable String email) {
+		employeeRepository.deleteById(email);
+		return "redirect:/admin/employees"; // Redirects back to list
+	}
+
+	// ===============================================
+	// 5. CUSTOMER MANAGEMENT (Restored Code)
+	// ===============================================
+	@GetMapping("/customers")
+	public String customerManagement(HttpSession session, Model model) {
+		if (session.getAttribute("adminSession") == null)
+			return "redirect:/admin/login";
+		// Fetching all users; Your template handles filtering by role 'USER'
+		List<User> customers = userRepository.findAll();
+		model.addAttribute("customers", customers);
+		return "admin-dashboard-files/customer-management";
+	}
+
+	// ===============================================
+	// 6. SERVICE REQUEST MANAGEMENT
+	// ===============================================
+	@GetMapping("/services")
+	public String showServiceManagement(HttpSession session, Model model) {
+		if (session.getAttribute("adminSession") == null) {
+			return "redirect:/admin/login";
+		}
+
+		List<ServiceRequest> requests = serviceRequestRepository.findAllByOrderByCreatedOnDesc();
+		List<Employee> allEmployees = employeeRepository.findAll();
+
+		model.addAttribute("requests", requests);
+		model.addAttribute("employees", allEmployees);
+
+		return "admin-dashboard-files/service-management";
+	}
+
+	@PostMapping("/services/assign")
+	public String assignEmployeeToService(@RequestParam Long requestId, @RequestParam String employeeEmail,
+			RedirectAttributes redirectAttributes) {
+
+		ServiceRequest req = serviceRequestRepository.findById(requestId).orElse(null);
+		Employee emp = employeeRepository.findById(employeeEmail).orElse(null);
+
+		if (req != null && emp != null) {
+			req.setAssignedEmployee(emp);
+			req.setServiceStatus("Work Not Started");
+			serviceRequestRepository.save(req);
+
+			emp.setWorkStatus("BUSY");
+			employeeRepository.save(emp);
+
+			redirectAttributes.addFlashAttribute("msg", "Employee Assigned Successfully!");
+		}
+		return "redirect:/admin/services";
+	}
+
+	@PostMapping("/services/updateStatus")
+	public String updateServiceStatus(@RequestParam Long requestId, @RequestParam String status,
+			RedirectAttributes redirectAttributes) {
+
+		ServiceRequest req = serviceRequestRepository.findById(requestId).orElse(null);
+
+		if (req != null) {
+			req.setServiceStatus(status);
+			serviceRequestRepository.save(req);
+
+			if ("Completed".equals(status) && req.getAssignedEmployee() != null) {
+				Employee emp = req.getAssignedEmployee();
+				emp.setWorkStatus("FREE");
+				employeeRepository.save(emp);
+			}
+			redirectAttributes.addFlashAttribute("msg", "Status Updated to " + status);
+		}
+		return "redirect:/admin/services";
+	}
+
+	// ===============================================
+	// 7. FEEDBACK
+	// ===============================================
+	@GetMapping("/feedback")
+	public String showFeedbackManagement(HttpSession session, Model model) {
+		if (session.getAttribute("adminSession") == null) {
+			return "redirect:/admin/login";
+		}
+		List<Feedback> allFeedback = feedbackRepository.findAll();
+		model.addAttribute("feedbacks", allFeedback);
+
+		return "admin-dashboard-files/feedback-management";
+	}
+
+	// ===============================================
+	// 8. LOGOUT
+	// ===============================================
+	@GetMapping("/logout")
+	public String adminLogout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/admin/login";
+	}
+
+	@GetMapping("/orders")
+	public String showOrderManagement(HttpSession session, Model model) {
+		if (session.getAttribute("adminSession") == null)
+			return "redirect:/admin/login";
+
+		List<ProductOrder> orders = productOrderRepository.findAll(); // You might want to sort by date
+		List<Employee> employees = employeeRepository.findAll();
+
+		model.addAttribute("orders", orders);
+		model.addAttribute("employees", employees);
+
+		return "admin-dashboard-files/order-management"; // You will need to create this HTML similar to
+															// service-management
+	}
+
+	@PostMapping("/orders/assign")
+	public String assignDeliveryBoy(@RequestParam Long orderId, @RequestParam String employeeEmail) {
+		ProductOrder order = productOrderRepository.findById(orderId).orElse(null);
+		Employee emp = employeeRepository.findById(employeeEmail).orElse(null);
+
+		if (order != null && emp != null) {
+			order.setDeliveryBoy(emp);
+			order.setDeliveryStatus("Out for Delivery");
+			productOrderRepository.save(order);
+
+			// Mark Delivery Boy as BUSY
+			emp.setWorkStatus("BUSY");
+			employeeRepository.save(emp);
+		}
+		return "redirect:/admin/orders";
+	}
+}

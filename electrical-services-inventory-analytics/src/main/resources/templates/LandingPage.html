@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>E S & Inventory Analytics | Welcome</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+	<link rel="stylesheet" th:href="@{/css/products.css}">
+
+
+	<style>
+		.navbar {
+			background: linear-gradient(90deg, #022860, #3f97db);
+			padding-top: 4px;
+			padding-bottom: 4px;
+		}
+
+		.navbar-brand {
+			font-weight: bold;
+			color: #fff !important;
+		}
+
+		.navbar-nav .nav-link {
+			color: #fff !important;
+			font-size: 1.1rem;
+			transition: all 0.3s ease;
+		}
+
+		.navbar-nav .nav-link:not(.btn):hover {
+			color: #000 !important;
+			background-color: #fff;
+			border-radius: 6px;
+			transform: translateY(-2px);
+		}
+
+		/* Button hover effects */
+		.btn-outline-light:hover {
+			color: #022860 !important;
+			background-color: white;
+		}
+
+		.hero {
+			background: linear-gradient(to right, #3f97db, #022860);
+			color: white;
+			padding: 100px 0;
+			text-align: center;
+		}
+
+		.hero h1 {
+			font-size: 2.5rem;
+			font-weight: bold;
+		}
+
+		.product-card .btn-buy {
+			background-color: #0d6efd;
+			color: white;
+			font-weight: bold;
+			padding: 10px;
+			border-radius: 5px;
+			text-align: center;
+			text-decoration: none;
+			display: block;
+			margin: 10px;
+			transition: background-color 0.3s;
+		}
+
+		.product-card .btn-buy:hover {
+			background-color: #0a58ca;
+		}
+
+		.section-bg {
+			background-color: #f8f9fa;
+		}
+
+		footer {
+			color: #343a40;
+			padding: 2px 0;
+		}
+
+		footer small {
+			color: #6c757d;
+		}
+	</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark">
+		<div class="container">
+			<a class="navbar-brand" th:href="@{/}">
+				<img th:src="@{/images/tiger.jpg}" alt="Logo" width="45" height="45"
+					class="rounded-circle me-2 border border-light">
+				Mathapati Electricals
+			</a>
+
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<ul class="navbar-nav ms-auto align-items-center">
+				<li class="nav-item mx-2">
+					<a class="nav-link" th:href="@{/user-Login}">Home</a>
+				</li>
+				<li class="nav-item mx-2">
+					<a class="nav-link" th:href="@{/services}">Service</a>
+				</li>
+				<li class="nav-item mx-2">
+					<a class="nav-link" href="#aboutus">About Us</a>
+				</li>
+
+				<li class="nav-item mx-2">
+					<button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#registerModal">
+						<i class="bi bi-person-plus-fill"></i> Register
+					</button>
+				</li>
+
+				<li class="nav-item mx-2">
+					<button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#loginModal">
+						<i class="bi bi-box-arrow-in-right"></i> Login
+					</button>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<section class="hero">
+		<div class="container">
+			<h1>Welcome to Mathapati Electricals</h1>
+			<h3>Electrical Services and Inventory Management with Analytics</h3>
+		</div>
+	</section>
+
+	<div class="container my-5">
+		<h1 class="text-center mb-2">Our Products</h1>
+		<p class="text-center text-muted mb-5">
+			Browse our selection of quality electrical products
+		</p>
+
+		<div class="row g-4" id="product-list">
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img th:src="@{/images/fan.jpg}" alt="Ceiling Fan" />
+					</div>
+					<h5 class="product-title">Fan</h5>
+					<p class="product-desc">Energy-efficient fan with 3-speed control.</p>
+					<a th:href="@{/user-Login}" class="btn-buy"><i class="bi bi-lock-fill"></i> Login to Buy</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img style="height: 200px;" th:src="@{/images/led-bulb.avif}" alt="LED Bulb" />
+					</div>
+					<h5 class="product-title">LED Bulb</h5>
+					<p class="product-desc">
+						12W LED bulb for bright and efficient lighting.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img style="height: 350px;" th:src="@{/images/switcgboard.jpeg}" alt="Switchboard" />
+					</div>
+					<h5 class="product-title">Switchboard</h5>
+					<p class="product-desc">
+						Durable switchboard with multiple socket options.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img th:src="@{/images/screw-driver.png}" alt="Screwdriver" />
+					</div>
+					<h5 class="product-title">Screwdriver</h5>
+					<p class="product-desc">
+						High-quality insulated screwdriver set for electrical use.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img style="height: 100px; " th:src="@{/images/tester.jpg}" alt="Tester" />
+					</div>
+					<h5 class="product-title">Tester</h5>
+					<p class="product-desc">
+						Compact electrical tester for checking live wires.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img th:src="@{/images/inverter.jpg}" alt="Inverter" />
+					</div>
+					<h5 class="product-title">Inverter</h5>
+					<p class="product-desc">
+						Efficient inverter for uninterrupted power supply.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img th:src="@{/images/mcb.jpg}" alt="MCB" />
+					</div>
+					<h5 class="product-title">MCB</h5>
+					<p class="product-desc">
+						Reliable circuit breaker for overload protection.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img th:src="@{/images/extensionboard.jpg}" alt="Extension Board" />
+					</div>
+					<h5 class="product-title">Extension Board</h5>
+					<p class="product-desc">
+						Heavy-duty extension board with surge protection.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="product-card">
+					<div class="product-img">
+						<img style="height: 200px;" th:src="@{/images/electrical-wire.avif}" alt="Electrical Wire" />
+					</div>
+					<h5 class="product-title">Electrical Wire</h5>
+					<p class="product-desc">
+						High-quality copper wire, durable and safe.
+					</p>
+					<a th:href="@{/user-Login}" class="btn-buy">
+						<i class="bi bi-lock-fill"></i> Login to Buy
+					</a>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	</div>
+
+	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content shadow-lg">
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title" id="loginModalLabel">Choose Login Type</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body text-center py-4">
+					<p class="mb-4">Select your role to continue:</p>
+
+					<a th:href="@{/admin/login}" class="btn btn-outline-primary btn-lg w-75 my-2">Admin Login</a><br>
+					<a th:href="@{/employee-login}" class="btn btn-outline-success btn-lg w-75 my-2">Employee
+						Login</a><br>
+					<a th:href="@{/user-Login}" class="btn btn-outline-info btn-lg w-75 my-2">Customer Login</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content shadow-lg">
+				<div class="modal-header" style="background-color: #3f97db; color: white;">
+					<h5 class="modal-title" id="registerModalLabel">Join Our Platform</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body text-center py-4">
+					<p class="mb-4">How would you like to register?</p>
+
+					<a th:href="@{/employee-register}" class="btn btn-outline-success btn-lg w-75 my-2">
+						<i class="bi bi-tools"></i> Register as Employee
+					</a><br>
+
+					<a th:href="@{/user-register}" class="btn btn-outline-primary btn-lg w-75 my-2">
+						<i class="bi bi-person-circle"></i> Register as Customer
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--footer fragment starts-->
+	<div th:replace="~{fragments/footer-page :: fullFooter}"></div>
+	<!--Footer fragment ends--> <!-- Bootstrap JS (CDN) -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

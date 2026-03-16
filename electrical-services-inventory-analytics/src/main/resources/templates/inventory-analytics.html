@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Inventory Analytics</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+	<style>
+		body {
+			background-color: #f8f9fa;
+		}
+
+		.stat-card {
+			border: none;
+			border-radius: 12px;
+			color: white;
+			padding: 20px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		.bg-expense {
+			background: linear-gradient(45deg, #ff6b6b, #ee5253);
+		}
+
+		/* Red for Expense */
+		.bg-profit {
+			background: linear-gradient(45deg, #1dd1a1, #10ac84);
+		}
+
+		/* Green for Profit */
+		.bg-value {
+			background: linear-gradient(45deg, #54a0ff, #2e86de);
+		}
+
+		/* Blue for Asset Value */
+	</style>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-dark bg-dark p-3">
+		<div class="container-fluid">
+			<span class="navbar-brand mb-0 h1">Inventory Intelligence System</span>
+			<a th:href="@{/admin/dashboard}" class="btn btn-outline-light btn-sm">Back to Dashboard</a>
+		</div>
+	</nav>
+
+	<div class="container my-4">
+
+		<div class="row g-4 mb-4">
+			<div class="col-md-4">
+				<div class="stat-card bg-value">
+					<h5><i class="bi bi-box-seam"></i> Current Inventory Value</h5>
+					<h2 th:text="'₹' + ${inventoryValue}">₹0.0</h2>
+					<small>Worth of stock currently in warehouse</small>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="stat-card bg-expense">
+					<h5><i class="bi bi-wallet2"></i> Total Expenses</h5>
+					<h2 th:text="'₹' + ${totalExpense}">₹0.0</h2>
+					<small>Money spent buying stock</small>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="stat-card bg-profit">
+					<h5><i class="bi bi-graph-up-arrow"></i> Gross Profit</h5>
+					<h2 th:text="'₹' + ${totalProfit}">₹0.0</h2>
+					<small>Profit from Sales (Revenue - Cost)</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="card shadow-sm h-100">
+					<div class="card-header bg-warning text-dark fw-bold">
+						<i class="bi bi-exclamation-triangle-fill"></i> Low Stock Alerts
+					</div>
+					<div class="card-body p-0">
+						<table class="table table-striped mb-0">
+							<thead>
+								<tr>
+									<th>Product</th>
+									<th>Stock</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="p : ${lowStockItems}">
+									<td th:text="${p.name}">Fan</td>
+									<td>
+										<span class="badge bg-danger" th:text="${p.stock}">5</span>
+									</td>
+									<td>
+										<button class="btn btn-sm btn-primary" th:data-id="${p.id}"
+											th:data-name="${p.name}"
+											onclick="openRestockModal(this.getAttribute('data-id'), this.getAttribute('data-name'))">
+											+ Restock
+										</button>
+									</td>
+								</tr>
+								<tr th:if="${lowStockItems.isEmpty()}">
+									<td colspan="3" class="text-center text-success">All stocks are healthy!</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-6">
+				<div class="card shadow-sm h-100">
+					<div class="card-header bg-secondary text-white fw-bold">
+						<i class="bi bi-clock-history"></i> Recent Stock History
+					</div>
+					<div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+						<table class="table table-sm table-hover mb-0 align-middle">
+							<thead class="table-light">
+								<tr>
+									<th>Date</th>
+									<th>Action</th>
+									<th>Details (Unit Price)</th>
+									<th>Total Cost</th>
+									<th>Total Sold</th>
+									<th>Profit/Loss</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="log : ${logs}">
+									<td th:text="${#temporals.format(log.timestamp, 'dd-MM HH:mm')}"></td>
+
+									<td>
+										<span
+											th:class="${log.action == 'RESTOCK' ? 'badge bg-danger' : 'badge bg-success'}"
+											th:text="${log.action}"></span>
+									</td>
+
+									<td>
+										<span class="fw-bold" th:text="${log.product.name}"></span>
+										<br>
+										<small class="text-muted">
+											Qty: <span th:text="${log.quantity}"></span> |
+											Rate: ₹<span th:text="${log.unitPrice}"></span>/pc
+										</small>
+									</td>
+
+									<td>
+										<span th:if="${log.action == 'RESTOCK'}" class="text-dark"
+											th:text="'₹' + ${log.totalAmount}"></span>
+
+										<span th:if="${log.action == 'SALE'}" class="text-muted"
+											th:text="'₹' + ${log.totalAmount - log.profit}"></span>
+									</td>
+
+									<td>
+										<span th:if="${log.action == 'RESTOCK'}">-</span>
+										<span th:if="${log.action == 'SALE'}" class="text-dark fw-bold"
+											th:text="'₹' + ${log.totalAmount}"></span>
+									</td>
+
+									<td>
+										<span th:if="${log.action == 'RESTOCK'}">-</span>
+										<span th:if="${log.action == 'SALE'}"
+											th:class="${log.profit >= 0} ? 'text-success fw-bold' : 'text-danger fw-bold'"
+											th:text="${log.profit >= 0 ? '+' : ''} + '₹' + ${log.profit}">
+										</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="restockModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form action="/admin/inventory/restock" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">Add Stock</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<p>Restocking: <strong id="modalProductName"></strong></p>
+						<input type="hidden" name="productId" id="modalProductId">
+
+						<div class="mb-3">
+							<label>Quantity to Add (Bulk Buy):</label>
+							<input type="number" name="quantity" class="form-control" required min="1">
+						</div>
+						<div class="mb-3">
+							<label>Cost Price (Per Unit) - <small class="text-muted">How much you paid?</small></label>
+							<input type="number" name="costPrice" class="form-control" step="0.01" required min="1">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">Confirm Purchase</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		function openRestockModal(id, name) {
+			document.getElementById('modalProductId').value = id;
+			document.getElementById('modalProductName').innerText = name;
+			new bootstrap.Modal(document.getElementById('restockModal')).show();
+		}
+	</script>
+</body>
+
+</html>

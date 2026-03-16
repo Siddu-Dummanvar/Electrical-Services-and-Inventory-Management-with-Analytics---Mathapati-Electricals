@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E S & Inventory Analytics | Welcome</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CSS (REQUIRED FOR THE EYE ICON) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        .navbar {
+            background: linear-gradient(90deg, #022860, #3f97db);
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #fff !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #000 !important;
+            background-color: #fff;
+            border-radius: 6px;
+            transform: translateY(-2px);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f9f2;
+        }
+
+        .registration-container {
+            max-width: 700px;
+            margin: 50px auto;
+            background: linear-gradient(90deg, #f1dc9c, #a3a78e);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for validation error messages */
+        .error-message {
+            color: #D8000C;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: block;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <!-- Placeholder for logo if it's missing locally -->
+                <img th:src="@{/images/tiger.jpg}" alt="Logo" width="45" height="45"
+                    class="rounded-circle me-2 border border-light">
+                Mathapati Electricals
+            </a>
+        </div>
+    </nav>
+
+    <div>
+        <a class="btn btn-outline-primary w-10 ms-3 mt-3" href="/LandingPage">Go Back</a>
+    </div>
+
+    <div class="container">
+        <div class="registration-container">
+
+            <!-- SUCCESS & ERROR DISPLAY -->
+            <div th:if="${successMSG}" class="alert alert-success text-center" role="alert">
+                <span th:text="${successMSG}"></span>
+            </div>
+
+            <div th:if="${errorMSG}" class="alert alert-danger text-center" role="alert">
+                <span th:text="${errorMSG}"></span>
+            </div>
+
+            <h2 class="text-center mb-3">Create User Account</h2>
+            <p class="text-center text-muted mb-4">Register for Electrical Services & Inventory Management</p>
+
+            <form th:action="@{/regForm}" method="post" th:object="${user}">
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" th:field="*{firstName}" required pattern="[A-Za-z]+"
+                            minlength="3" maxlength="15"
+                            title="First name must contain only letters, 3 to 15 characters long.">
+                        <span class="error-message" th:if="${#fields.hasErrors('firstName')}"
+                            th:errors="*{firstName}"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" th:field="*{lastName}" required pattern="[A-Za-z]+"
+                            minlength="3" maxlength="15"
+                            title="Last name must contain only letters, 3 to 15 characters long.">
+                        <span class="error-message" th:if="${#fields.hasErrors('lastName')}"
+                            th:errors="*{lastName}"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" th:field="*{emailid}" required
+                            pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                            title="Enter a valid email address (example: name@gmail.com)">
+                        <span class="error-message" th:if="${#fields.hasErrors('emailid')}"
+                            th:errors="*{emailid}"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" th:field="*{phoneNo}" pattern="[0-9]{10}" maxlength="10"
+                            required title="Phone number must contain exactly 10 digits."
+                             oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10);">
+                        <span class="error-message" th:if="${#fields.hasErrors('phoneNo')}"
+                            th:errors="*{phoneNo}"></span>
+                    </div>
+                </div>
+
+                <!-- ✅ UPDATED PASSWORD FIELD WITH EYE ICON -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" th:field="*{password}" required
+                                id="passwordInput"
+                                pattern="^(?=.*[A-Z])(?=.*[@#$%^&amp;*!]).{8,25}$"
+                                title="Password must be 8-25 characters, with at least one uppercase letter and one special character (@#$%^&amp;*!).">
+                            
+                            <!-- The Eye Icon Button -->
+                            <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
+                                <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" th:if="${#fields.hasErrors('password')}"
+                            th:errors="*{password}"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control" th:field="*{city}" pattern="[A-Za-z]+" minlength="3"
+                            maxlength="10" required
+                            title="City name must contain only letters and be 3 to 10 characters long.">
+                        <span class="error-message" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">State</label>
+                        <input type="text" class="form-control" th:field="*{state}" pattern="[A-Za-z]+" minlength="3"
+                            maxlength="10" required
+                            title="State name must contain only letters and be 3 to 10 characters long.">
+                        <span class="error-message" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">PIN</label>
+                        <!-- Ensure th:field="*{pin}" matches your Entity exactly -->
+                        <input type="text" class="form-control" th:field="*{pin}" maxlength="6" pattern="[0-9]{6}"
+                            required title="PIN code must contain exactly 6 digits."
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6);">
+                        <span class="error-message" th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-control" th:field="*{address}" rows="2"
+                        title="Enter your full address (optional)"></textarea>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between align-items-center">
+                    <button type="submit" class="btn btn-outline-success px-4"><b>Register</b></button>
+                    
+                    <div class="d-flex align-items-center">
+                         <span class="me-2" style="font-size: 18px;">Already have an account?</span>
+                         <a href="/user-Login" class="text-primary" style="font-size: 18px; font-weight: bold; text-decoration: none;">Sign in</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ✅ JAVASCRIPT FOR PASSWORD TOGGLE -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const passwordInput = document.getElementById('passwordInput');
+            const icon = document.getElementById('togglePasswordIcon');
+
+            if (toggleBtn && passwordInput && icon) {
+                toggleBtn.addEventListener('click', function () {
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    
+                    // Toggle type
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    
+                    // Toggle icon class
+                    icon.className = isPassword ? 'bi bi-eye' : 'bi bi-eye-slash';
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

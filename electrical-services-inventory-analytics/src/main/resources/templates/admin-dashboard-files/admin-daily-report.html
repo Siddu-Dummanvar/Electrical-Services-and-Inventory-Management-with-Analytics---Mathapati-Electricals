@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Daily Report | Admin</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+	<style>
+		body {
+			background-color: #f4f6f9;
+		}
+
+		.sidebar {
+			height: 100vh;
+			width: 250px;
+			background-color: #071b38;
+			position: fixed;
+		}
+
+		.main-content {
+			margin-left: 250px;
+			padding: 20px;
+		}
+
+		.card-stat {
+			border-left: 5px solid;
+		}
+
+		.sidebar {
+			height: 90vh;
+			width: 250px;
+			background-color: #071b38;
+			margin-top: 10px;
+		}
+
+		.fontStyle {
+			color: #f6eeee;
+			text-decoration: none;
+			font-style: normal;
+			font-size: large;
+		}
+
+		.navlink {
+			padding-top: 10px;
+			padding-bottom: 15px;
+			padding-left: 20px;
+		}
+
+		.navlink:hover {
+			background-color: #072f4e
+		}
+
+		.navbar {
+			padding-top: 0px;
+			padding-bottom: 0px;
+			background: linear-gradient(90deg, #022860, #3f97db);
+			margin-bottom: 1px;
+		}
+	</style>
+</head>
+
+<body>
+	<div th:replace="~{fragments/admin-navbar :: adminNavbar}"></div>
+	<div class="container-fluid p-0">
+		<div th:replace="~{fragments/admin-sidebar :: adminSidebar}"></div>
+
+		<div class="main-content">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h3 class="fw-bold text-dark">
+					<i class="bi bi-calendar-check text-primary"></i> Daily Report: <span
+						th:text="${reportDate}"></span>
+				</h3>
+
+				<div class="d-flex gap-2">
+					<a th:href="@{/admin/report/daily/download/excel(date=${reportDate})}" class="btn btn-success">
+						<i class="bi bi-file-earmark-excel-fill me-2"></i>Download Excel
+					</a>
+
+					<a th:href="@{/admin/report/daily/download/pdf(date=${reportDate})}" class="btn btn-danger">
+						<i class="bi bi-file-earmark-pdf-fill me-2"></i>Download PDF
+					</a>
+
+					<a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+						<i class="bi bi-arrow-left"></i> Back
+					</a>
+				</div>
+			</div>
+
+			<div class="row g-3 mb-4">
+				<div class="col-md-3">
+					<div class="card shadow-sm border-0 card-stat border-success h-100">
+						<div class="card-body">
+							<h6 class="text-muted text-uppercase">Total Revenue</h6>
+							<h3 class="fw-bold text-success" th:text="'₹ ' + ${totalDailyRevenue}"></h3>
+							<small>Products + Services</small>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card shadow-sm border-0 card-stat border-primary h-100">
+						<div class="card-body">
+							<h6 class="text-muted text-uppercase">Products Sold</h6>
+							<h3 class="fw-bold text-primary" th:text="${productsSold}"></h3>
+							<small th:text="'Revenue: ₹ ' + ${productRevenue}"></small>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card shadow-sm border-0 card-stat border-info h-100">
+						<div class="card-body">
+							<h6 class="text-muted text-uppercase">Services Done</h6>
+							<h3 class="fw-bold text-info" th:text="${servicesDone}"></h3>
+							<small th:text="'Revenue: ₹ ' + ${serviceRevenue}"></small>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card shadow-sm border-0 card-stat border-danger h-100">
+						<div class="card-body">
+							<h6 class="text-muted text-uppercase">Restock Expense</h6>
+							<h3 class="fw-bold text-danger" th:text="'₹ ' + ${dailyExpense}"></h3>
+							<small th:text="${itemsRestocked} + ' items added'"></small>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="card shadow-sm border-0">
+						<div class="card-header bg-white fw-bold"><i class="bi bi-cart"></i> Product Orders</div>
+						<div class="card-body p-0">
+							<table class="table table-striped mb-0">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Product</th>
+										<th>Qty</th>
+										<th>Amount</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="order : ${dailyOrders}">
+										<td th:text="'#' + ${order.id}"></td>
+										<td th:text="${order.product.name}"></td>
+										<td th:text="${order.quantity}"></td>
+										<td th:text="'₹ ' + ${order.price}"></td>
+									</tr>
+									<tr th:if="${dailyOrders.empty}">
+										<td colspan="4" class="text-center">No orders today.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="card shadow-sm border-0">
+						<div class="card-header bg-white fw-bold"><i class="bi bi-tools"></i> Completed Services</div>
+						<div class="card-body p-0">
+							<table class="table table-striped mb-0">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Customer</th>
+										<th>Type</th>
+										<th>Amount</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="serv : ${dailyServices}">
+										<td th:text="'REQ-' + ${serv.id}"></td>
+										<td th:text="${serv.fullName}"></td>
+										<td th:text="${serv.serviceType}"></td>
+										<td th:text="'₹ ' + ${serv.amount}"></td>
+									</tr>
+									<tr th:if="${dailyServices.empty}">
+										<td colspan="4" class="text-center">No services completed today.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

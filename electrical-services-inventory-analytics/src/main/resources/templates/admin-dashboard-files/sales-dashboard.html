@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Sales & Analytics | Admin</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+	<link rel="stylesheet" th:href="@{/styles.css}">
+	<style>
+		.stat-card {
+			border-radius: 15px;
+			color: white;
+			padding: 20px;
+			transition: transform 0.3s;
+		}
+
+		.stat-card:hover {
+			transform: translateY(-5px);
+		}
+
+		.bg-revenue {
+			background: linear-gradient(135deg, #28a745, #20c997);
+		}
+
+		.bg-expense {
+			background: linear-gradient(135deg, #dc3545, #f77f00);
+		}
+
+		.bg-profit {
+			background: linear-gradient(135deg, #007bff, #6610f2);
+		}
+
+		.main-content {
+			margin-left: 250px;
+			padding: 20px;
+		}
+
+		.sidebar {
+			height: 100vh;
+			width: 250px;
+			background-color: #071b38;
+			position: fixed;
+		}
+
+		.sidebar {
+			height: 100vh;
+			width: 260px;
+			background-color: #071b38;
+			position: fixed;
+		}
+
+		.main-content {
+			margin-left: 250px;
+			padding: 20px;
+			background-color: #f4f6f9;
+			min-height: 100vh;
+		}
+
+		.revenue-text {
+			color: #198754;
+			font-weight: bold;
+		}
+
+		.total-badge {
+			background-color: #0d6efd;
+			color: white;
+			padding: 5px 10px;
+			border-radius: 20px;
+		}
+
+		.sidebar {
+			height: 90vh;
+			width: 250px;
+			background-color: #071b38;
+			margin-top: 10px;
+		}
+
+		.fontStyle {
+			color: #f6eeee;
+			text-decoration: none;
+			font-style: normal;
+			font-size: large;
+		}
+
+		.navlink {
+			padding-top: 10px;
+			padding-bottom: 15px;
+			padding-left: 20px;
+		}
+
+		.navlink:hover {
+			background-color: #072f4e
+		}
+
+		.navbar {
+			padding-top: 0px;
+			padding-bottom: 0px;
+			background: linear-gradient(90deg, #022860, #3f97db);
+			margin-bottom: 1px;
+		}
+	</style>
+</head>
+
+<body style="background-color: #f4f6f9;">
+
+	<div th:replace="~{fragments/admin-navbar :: adminNavbar}"></div>
+
+	<div class="sidebar text-white">
+		<div th:replace="~{fragments/admin-sidebar :: adminSidebar}"></div>
+	</div>
+
+	<div class="main-content">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h2 class="fw-bold">📊 Sales & Reports</h2>
+			<form th:action="@{/admin/sales/report/pdf}" method="get" class="d-flex align-items-center gap-2">
+				<label class="fw-bold text-dark mb-0">Select Month:</label>
+				<input type="month" name="date" class="form-control" required
+					th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM')}">
+
+				<button type="submit" class="btn btn-danger fw-bold text-nowrap">
+					<i class="bi bi-file-earmark-pdf-fill"></i> Download Report
+				</button>
+			</form>
+		</div>
+
+		<div th:if="${msg}" class="alert alert-success alert-dismissible fade show" th:text="${msg}"></div>
+
+		<div class="row g-4 mb-5">
+			<div class="col-md-4">
+				<div class="stat-card bg-revenue shadow">
+					<h5>💰 Total Revenue</h5>
+					<h2 class="fw-bold">₹<span th:text="${#numbers.formatDecimal(totalRevenue, 1, 0)}"></span></h2>
+					<small>Sales + Services</small>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="stat-card bg-expense shadow">
+					<h5>📉 Total Expenses</h5>
+					<h2 class="fw-bold">₹<span th:text="${#numbers.formatDecimal(totalExpenses, 1, 0)}"></span></h2>
+					<small>Bulk Stock Purchases</small>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="stat-card bg-profit shadow">
+					<h5>📈 Net Profit</h5>
+					<h2 class="fw-bold">₹<span th:text="${#numbers.formatDecimal(netProfit, 1, 0)}"></span></h2>
+					<small>Revenue - Expenses</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-5">
+				<div class="card shadow border-0">
+					<div class="card-header bg-dark text-white">
+						<h5 class="mb-0"><i class="bi bi-cart-plus-fill"></i> Bulk Purchase (Restock)</h5>
+					</div>
+					<div class="card-body">
+						<form th:action="@{/admin/sales/restock}" method="post">
+							<div class="mb-3">
+								<label>Select Product</label>
+								<select name="productId" class="form-select" required>
+
+
+
+									<option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}"></option>
+								</select>
+							</div>
+							<div class="row mb-3">
+								<div class="col-6">
+									<label>Quantity</label>
+									<input type="number" name="quantity" class="form-control" required
+										placeholder="e.g. 50">
+								</div>
+								<div class="col-6">
+									<label>Total Buying Cost (₹)</label>
+									<input type="number" name="buyingPrice" class="form-control" required
+										placeholder="Total Bill">
+								</div>
+							</div>
+							<button type="submit" class="btn btn-warning w-100 fw-bold">Add to Inventory & Log
+								Expense</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-7">
+				<div class="card shadow border-0 h-100">
+					<div class="card-header bg-primary text-white">
+						<h5 class="mb-0"><i class="bi bi-trophy-fill"></i> Top Performers</h5>
+					</div>
+					<div class="card-body p-0 table-responsive">
+						<table class="table table-hover mb-0">
+							<thead class="table-light">
+								<tr>
+									<th>Employee</th>
+									<th>Role</th>
+									<th>Tasks Done</th>
+									<th>Money Generated</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="stat : ${empStats}">
+									<td class="fw-bold" th:text="${stat.emp.firstName} + ' ' + ${stat.emp.lastName}">
+									</td>
+									<td><span class="badge bg-secondary" th:text="${stat.emp.jobTitle}"></span></td>
+									<td th:text="${stat.tasksCompleted}"></td>
+									<td class="text-success fw-bold">₹<span th:text="${stat.totalGenerated}"></span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card shadow border-0 mt-4">
+			<div class="card-header bg-info text-white">
+				<h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Inventory Velocity & Stockout Predictions</h5>
+			</div>
+			<div class="card-body p-0">
+				<table class="table table-hover mb-0 align-middle">
+					<thead class="table-light">
+						<tr>
+							<th>Product Name</th>
+							<th>Current Stock</th>
+							<th>Sold (Last 30 Days)</th>
+							<th>Sales Velocity</th>
+							<th>Predicted Stockout</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="item : ${inventoryAnalytics}">
+							<td class="fw-bold" th:text="${item.productName}"></td>
+
+							<td><span class="badge bg-secondary" th:text="${item.currentStock} + ' units'"></span></td>
+
+							<td th:text="${item.soldLastMonth}"></td>
+
+							<td>
+								<span th:text="${#numbers.formatDecimal(item.velocity, 1, 1)}"></span> / day
+								<i class="bi bi-speedometer2 text-muted"></i>
+							</td>
+
+							<td>
+								<strong th:class="${item.daysUntilStockout < 7 ? 'text-danger' : 'text-dark'}"
+									th:text="${item.daysUntilStockout} + ' Days'">
+								</strong>
+							</td>
+
+							<td th:text="${item.status}"></td>
+						</tr>
+
+						<tr th:if="${inventoryAnalytics.empty}">
+							<td colspan="6" class="text-center text-muted p-4">
+								Not enough sales data to generate predictions yet.
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
