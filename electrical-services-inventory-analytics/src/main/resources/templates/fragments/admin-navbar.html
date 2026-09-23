@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .admin-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            z-index: 9999;
+            background: linear-gradient(90deg, #022860, #3f97db);
+        }
+
+        body {
+            margin: 0;
+            padding-top: 70px; /* prevents content overlap */
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark admin-navbar"
+         th:fragment="adminNavbar">
+        <div class="container-fluid">
+            <a class="navbar-brand mx-auto d-flex align-items-center" href="#">
+                <img th:src="@{/images/tiger.jpg}"
+                     width="50" height="50"
+                     class="me-3 rounded-circle border border-light"
+                     alt="Logo">
+                <span class="text-white fw-semibold">
+                    Mathapati Electricals Admin Dashboard
+                </span>
+            </a>
+        </div>
+    </nav>
+</body>
+</html>

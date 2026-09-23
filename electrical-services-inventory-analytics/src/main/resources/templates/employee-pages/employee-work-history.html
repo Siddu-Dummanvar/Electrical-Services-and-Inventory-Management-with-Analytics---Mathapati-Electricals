@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Work History | Employee</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+	<style>
+		body {
+			background-color: #f4f6f9;
+		}
+
+		.sidebar {
+			height: 100vh;
+			width: 100%;
+		}
+
+		.navlink:hover {
+			background-color: #072f4e;
+			border-left: 4px solid #3f97db;
+		}
+	</style>
+</head>
+
+<body>
+	<div th:replace="~{employeeFragments/employee-header :: employeeHeader}"></div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2 p-0">
+				<div th:replace="~{employeeFragments/employee-sidebar :: employeeSidebar}"></div>
+			</div>
+
+			<div class="col-md-10 p-4">
+				<h3 class="fw-bold text-dark mb-4"><i class="bi bi-clock-history"></i> Work Done (History)</h3>
+
+				<div th:if="${role == 'TECHNICIAN'}">
+					<div class="card shadow border-0">
+						<div class="card-body p-0">
+							<table class="table table-hover mb-0">
+								<thead class="table-success">
+									<tr>
+										<th>Service ID</th>
+										<th>Customer</th>
+										<th>Type</th>
+										<th>Completed On</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="task : ${history}">
+										<td th:text="'REQ-' + ${task.id}"></td>
+										<td>
+											<span th:text="${task.fullName}"></span><br>
+											<small class="text-muted" th:text="${task.location}"></small>
+										</td>
+										<td th:text="${task.serviceType}"></td>
+										<td th:text="${task.completionDate}"></td>
+										<td><span class="badge bg-success">Completed</span></td>
+									</tr>
+									<tr th:if="${history.empty}">
+										<td colspan="5" class="text-center p-3">No completed work yet.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${role == 'DELIVERY'}">
+					<div class="card shadow border-0">
+						<div class="card-body p-0">
+							<table class="table table-hover mb-0">
+								<thead class="table-success">
+									<tr>
+										<th>Order ID</th>
+										<th>Type</th>
+										<th>Customer</th>
+										<th>Product</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="order : ${history}">
+										<td th:text="'ORD-' + ${order.id}"></td>
+										<td>
+											<span th:if="${order.returnStatus == 'Refunded'}"
+												class="badge bg-danger">Return Pickup</span>
+											<span th:if="${order.deliveryStatus == 'Delivered'}"
+												class="badge bg-primary">Delivery</span>
+										</td>
+										<td>
+											<span th:text="${order.user.firstName}"></span><br>
+											<small class="text-muted" th:text="${order.user.city}"></small>
+										</td>
+										<td th:text="${order.product.name}"></td>
+										<td>
+											<span th:if="${order.returnStatus == 'Refunded'}"
+												class="text-success fw-bold">Refunded & Closed</span>
+											<span th:if="${order.deliveryStatus == 'Delivered'}"
+												class="text-success fw-bold">Delivered</span>
+										</td>
+									</tr>
+									<tr th:if="${history.empty}">
+										<td colspan="5" class="text-center p-3">No work history found.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

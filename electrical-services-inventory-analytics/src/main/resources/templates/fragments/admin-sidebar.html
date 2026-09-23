@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+	<div class="sidebar" style="padding-top: 90px;" th:fragment="adminSidebar">
+
+		<div class="navlink">
+			<a th:href="@{/}" class="fontStyle">
+				<i class="bi bi-globe"></i>&nbsp;&nbsp;Visit Website
+			</a>
+		</div>
+
+		<hr style="border-color: rgba(255,255,255,0.3); margin: 10px 20px;">
+
+		<div class="navlink">
+			<a th:href="@{/admin/dashboard}" class="fontStyle">
+				<i class="bi bi-house"></i>&nbsp;&nbsp;Dashboard
+			</a>
+		</div>
+
+		<div class="navlink">
+			<a th:href="@{/admin/products}" class="fontStyle">
+				<i class="bi bi-bag-fill"></i>&nbsp;&nbsp;Product Management
+			</a>
+		</div>
+
+		<div class="navlink">
+			<a th:href="@{/admin/employees}" class="fontStyle">
+				<i class="bi bi-people-fill"></i>&nbsp;&nbsp;Employee Management
+			</a>
+		</div>
+
+		<div class="navlink">
+			<a th:href="@{/admin/customers}" class="fontStyle">
+				<i class="bi bi-person-lines-fill"></i>&nbsp;&nbsp;Customer Management
+			</a>
+		</div>
+
+		<div class="navlink">
+			<a th:href="@{/admin/services}" class="fontStyle">
+				<i class="bi bi-lightning-charge"></i>&nbsp;&nbsp;Services Management
+			</a>
+		</div>
+		<div class="navlink">
+			<a th:href="@{/admin/orders}" class="fontStyle">
+				<i class="bi bi-box-seam"></i>&nbsp;&nbsp;Order Management
+			</a>
+		</div>
+		<!--
+		<a class="nav-link fontStyle navlink" th:href="@{/admin/sales}">
+			<i class="bi bi-graph-up-arrow me-2"></i> Sales & Reports
+		</a>
+		-->
+		<div class="navlink">
+			<a th:href="@{/admin/returns}" class="fontStyle">
+				<i class="bi bi-arrow-counterclockwise"></i>&nbsp;&nbsp;Return Management
+			</a>
+		</div>
+		
+		<div class="navlink">
+			<a th:href="@{/admin/sales}" class="fontStyle">
+				<i class="bi bi-graph-up-arrow me-2"></i>&nbsp;&nbsp;Sales & Reports
+			</a>
+		</div>
+		<div class="navlink">
+			<a th:href="@{/admin/feedback}" class="fontStyle">
+				<i class="bi bi-chat-dots"></i>&nbsp;&nbsp;Feedback
+			</a>
+		</div>
+
+		<div class="navlink">
+			<a th:href="@{/admin/logout}" class="fontStyle">
+				<i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout
+			</a>
+		</div>
+	</div>
+
+</body>
+
+</html>

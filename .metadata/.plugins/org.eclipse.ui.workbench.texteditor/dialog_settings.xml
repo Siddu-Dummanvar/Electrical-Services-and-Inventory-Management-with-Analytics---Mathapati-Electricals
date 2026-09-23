@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<section name="java.lang.Class">
+		<item key="replaceBarOpen" value="true"/>
+		<list key="findhistory">
+			<item value="Home"/>
+			<item value="login"/>
+			<item value="out"/>
+			<item value="logout"/>
+			<item value="log"/>
+			<item value="mapping"/>
+			<item value="PUT"/>
+			<item value="aily Report"/>
+			<item value="generateDailyReport"/>
+			<item value="box"/>
+			<item value="overview"/>
+			<item value="Pending"/>
+			<item value="showOrderManagement"/>
+			<item value="registerEmployee"/>
+			<item value="Applying"/>
+		</list>
+		<list key="replacehistory">
+			<item value="index"/>
+		</list>
+	</section>
+</section>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Service Management | Admin</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+	<link rel="stylesheet" th:href="@{/styles.css}">
+	<style>
+		/* Small CSS for the timeline/status badges */
+		.status-badge {
+			font-size: 0.9rem;
+			padding: 5px 10px;
+			border-radius: 20px;
+		}
+
+		.bg-new {
+			background-color: rgb(0, 128, 255);
+			color: #0d47a1;
+		}
+
+		.bg-pending {
+			background-color: rgb(0, 128, 255);
+			color: #856404;
+		}
+
+		.bg-progress {
+			background-color: rgb(0, 128, 255);
+			color: #0f5132;
+		}
+
+		.bg-completed {
+			background-color: #198754;
+			color: white;
+		}
+
+		.sidebar {
+			height: 90vh;
+			width: 250px;
+			background-color: #071b38;
+			margin-top: 10px;
+		}
+
+		.fontStyle {
+			color: #f6eeee;
+			text-decoration: none;
+			font-style: normal;
+			font-size: large;
+		}
+
+		.navlink {
+			padding-top: 10px;
+			padding-bottom: 15px;
+			padding-left: 20px;
+
+		}
+
+		.navlink:hover {
+			background-color: #072f4e
+		}
+
+		.navbar {
+			padding-top: 0px;
+			padding-bottom: 0px;
+			background: linear-gradient(90deg, #022860, #3f97db);
+			margin-bottom: 1px;
+		}
+	</style>
+</head>
+
+<body>
+	<div th:replace="~{fragments/admin-navbar :: adminNavbar}"></div>
+
+	<section>
+
+		<div class="container-fluid d-flex p-0">
+			<div th:replace="~{fragments/admin-sidebar :: adminSidebar}"></div>
+
+			<div class="flex-grow-1 p-4" style="background-color: #f5f5f5;">
+				<div class="container-fluid">
+					<h2 class="mb-4">Service Request Management</h2>
+
+					<div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+
+					<div class="table-responsive bg-white p-3 rounded shadow-sm">
+						<table class="table table-hover align-middle">
+							<thead class="table-dark">
+								<tr>
+									<th>ID</th>
+									<th>Customer Details</th>
+									<th>Service Type</th>
+									<th>Preferred Date</th>
+									<th>Assigned To</th>
+									<th>Work Status</th>
+									<th>Financials</th>
+									<th>Assign</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="req : ${requests}">
+									<td th:text="${req.id}"></td>
+									<td>
+										<strong th:text="${req.fullName}"></strong><br>
+										<small th:text="${req.phoneNumber}"></small><br>
+										<small class="text-muted" th:text="${req.location}"></small>
+									</td>
+									<td th:text="${req.serviceType}"></td>
+									<td th:text="${req.preferredDate} + ' ' + ${req.preferredTime}"></td>
+
+									<td>
+										<span th:if="${req.assignedEmployee != null}"
+											th:text="${req.assignedEmployee.firstName}"
+											class="fw-bold text-primary"></span>
+										<span th:if="${req.assignedEmployee == null}"
+											class="text-danger">Unassigned</span>
+									</td>
+
+									<td>
+										<span class="badge"
+											th:classappend="${req.serviceStatus == 'Completed' ? 'bg-success' : 'bg-warning text-dark'}"
+											th:text="${req.serviceStatus}">
+										</span>
+										<div th:if="${req.completionDate != null}">
+											<small class="text-muted" style="font-size: 0.75rem;">Done:
+												[[${req.completionDate}]]</small>
+										</div>
+									</td>
+
+									<td>
+										<div th:if="${req.amount != null}">
+											<span class="text-success fw-bold"
+												style="font-size: 1.1em;">₹[[${req.amount}]]</span><br>
+											<span class="badge bg-success" style="font-size: 0.7rem;">Paid Online</span>
+										</div>
+										<div th:if="${req.amount == null}">
+											<span class="text-muted">-</span>
+										</div>
+									</td>
+
+									<td>
+										<form th:if="${req.assignedEmployee == null}"
+											th:action="@{/admin/services/assign}" method="post">
+											<input type="hidden" name="requestId" th:value="${req.id}">
+											<div class="input-group input-group-sm">
+												<select name="employeeEmail" class="form-select" required>
+													<option value="" disabled selected>Select Employee</option>
+													<option th:each="emp : ${employees}"
+														th:if="${emp.workStatus == 'FREE'}" th:value="${emp.email}"
+														th:text="${emp.firstName} + ' (' + ${emp.jobTitle} + ')'">
+													</option>
+												</select>
+												<button class="btn btn-primary" type="submit">Assign</button>
+											</div>
+										</form>
+										<span th:if="${req.assignedEmployee != null}" class="text-success">
+											<i class="bi bi-check-circle-fill"></i> Assigned
+										</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

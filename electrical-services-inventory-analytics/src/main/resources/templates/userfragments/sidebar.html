@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+	<div th:fragment="sidebar" class="d-flex flex-column flex-shrink-0 p-3 text-white"
+		style="width: 250px; height: 100vh; background-color: #071b38;">
+
+
+		<a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+			<span class="fs-4">Menu</span>
+		</a>
+		<hr>
+
+		<ul class="nav nav-pills flex-column mb-auto">
+
+			<li class="nav-item mb-3">
+				<div class="text-white">
+					<i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+					<br>
+					<span>Hello, </span>
+					<span th:text="${sessionUser != null ? sessionUser.firstName : 'User'}"></span>
+				</div>
+			</li>
+
+			<li class="nav-item">
+				<a th:href="@{/about-me}" target="contentFrame" class="nav-link text-white">
+					<i class="bi bi-person me-2"></i>
+					About Me
+				</a>
+			</li>
+
+			<li>
+				<a th:href="@{/myorder}" target="contentFrame" class="nav-link text-white">
+					<i class="bi bi-bag-check me-2"></i>
+					My Orders
+				</a>
+			</li>
+
+			<li>
+				<a th:href="@{/cart}" target="contentFrame" class="nav-link text-white">
+					<i class="bi bi-cart me-2"></i>
+					Cart
+				</a>
+			</li>
+			<li>
+				<a th:href="@{/my-services}" target="contentFrame" class="nav-link text-white">
+					<i class="bi bi-tools"></i> My Services
+				</a>
+			</li>
+
+			<li>
+				<a th:href="@{/user-logout}" class="btn btn-danger"> <i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+				
+
+				</a>
+			</li>
+		</ul>
+	</div>
+
+</body>
+
+</html>
