@@ -216,8 +216,8 @@ public class UserConroller {
 			model.addAttribute("sessionUser", authenticatedUser);
 			return "redirect:/Home";
 		} else {
-			model.addAttribute("errorMSG", "❌ Incorrect Email ID or Password!");
-			return "User-Login";
+		    model.addAttribute("errorMSG", "❌ Incorrect Email ID or Password!");
+		    return "user-Login";
 		}
 	}
 
