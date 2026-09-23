@@ -35,4 +35,5 @@ build/
 .classpath
 .project
 .settings/
-target/
+target/mathapati_electricals.sql
+mathapati_electricals.sql
